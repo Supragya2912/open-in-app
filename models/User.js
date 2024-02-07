@@ -1,19 +1,26 @@
 const mongoose = require('mongoose');
 
-const user = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
     {
-        id : {
-            type : int,
-            required : true
+        email: {
+            type: String,
+            required: true,
+            unique: true,
         },
-        phone:{
+        phone: {
             type: Number,
             required: true
         },
-        priority:{
-            type: int,
+        priority: {
+            type: Number,
+            enum: [0, 1, 2],
             required: true
-        }   
+        },
+        password:{
+            type: String,
+            required: true
+        }
+
     }
 )
 
