@@ -124,14 +124,23 @@ exports.protect = async (req, res, next) => {
                 return res.redirect('/login');
             }
 
+            console.log("CLEAR1")
+
             const user = await User.findOne({ refreshToken });
+
+            console.log("CLEAR2")
+
 
             if (!user) {
                 return res.redirect('/login');
             }
 
             const newAccessToken = jwt.sign({ id: user._id }, secret, { expiresIn: '1h' });
+            console.log(newAccessToken);
             res.cookie('accessToken', newAccessToken, { httpOnly: true });
+
+            console.log("CLEAR3")
+
 
             req.userId = user._id;
             next();
