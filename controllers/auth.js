@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const secret = "jsfnsdfbjsd";
+const crypto = require('crypto');
 
 
 exports.registerUser = async (req, res, next) => {
@@ -29,7 +30,8 @@ exports.registerUser = async (req, res, next) => {
         await newUser.save();
         res.status(200).json({
             status: 'success',
-            message: "User registered successfully"
+            message: "User registered successfully",
+            data: newUser
         })
 
     } catch (err) {
@@ -38,6 +40,10 @@ exports.registerUser = async (req, res, next) => {
             message: "Something went wrong!",
         })
     }
+}
+
+const generateRefreshToken = () => {
+    return crypto.randomBytes(10).toString('hex');
 }
 
 
@@ -57,20 +63,28 @@ exports.loginUser = async (req, res, next) => {
 
 
         const passwordCompare = await bcrypt.compare(password, existing_user.password);
-    
+
         if (!passwordCompare) {
             res.status(401).json({
                 status: 'error',
                 message: "Invalid credentials"
             })
         }
-       
 
-        const token = jwt.sign({ id: existing_user._id }, secret, { expiresIn: '1h' });
+
+        const accessToken = jwt.sign({ id: existing_user._id }, secret, { expiresIn: '1h' });
+        const refreshToken = generateRefreshToken();
+        existing_user.refreshToken = refreshToken;
+        const saved_token_response = await existing_user.save();
+        console.log(saved_token_response);
+
+        res.cookie('accessToken', accessToken, { httpOnly: true });
+        res.cookie('refreshToken', refreshToken, { httpOnly: true });
+
         res.status(200).json({
             status: 'success',
             message: "User logged in successfully",
-            authToken: token
+            accessToken: accessToken
         })
 
 
@@ -83,6 +97,49 @@ exports.loginUser = async (req, res, next) => {
 }
 
 
-exports.protect = async(req, res, next) => {
-    
+exports.protect = async (req, res, next) => {
+
+    try {
+
+        const accessToken = req.cookies.accessToken;
+
+        if (!accessToken) {
+            return res.status(401).json({
+                status: 'error',
+                message: "Token in missing!"
+            })
+        }
+
+        // verify the token
+        const decoded = jwt.verify(accessToken, secret);
+        req.userId = decoded.id;
+        next();
+
+    } catch (err) {
+
+        if (err instanceof jwt.TokenExpiredError) {
+
+            const refreshToken = req.cookies.refreshToken;
+            if (!refreshToken) {
+                return res.redirect('/login');
+            }
+
+            const user = await User.findOne({ refreshToken });
+
+            if (!user) {
+                return res.redirect('/login');
+            }
+
+            const newAccessToken = jwt.sign({ id: user._id }, secret, { expiresIn: '1h' });
+            res.cookie('accessToken', newAccessToken, { httpOnly: true });
+
+            req.userId = user._id;
+            next();
+        } else {
+            res.status(401).json({
+                status: 'error',
+                message: "Invalid access token"
+            })
+        }
+    }
 }
