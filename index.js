@@ -5,11 +5,13 @@ const connectToDB = require('./db');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const routes = require('./routes/routes');
+const cookieParser = require('cookie-parser');
 
 
 connectToDB();
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.use(
     cors({

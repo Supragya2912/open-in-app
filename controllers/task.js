@@ -7,6 +7,7 @@ exports.createTask = async (req, res, next) => {
 
         const { title, description , due_date } = req.body;
         
+        
         const existing_task = await Task.findOne({ title: title, description: description});
 
         if(existing_task) {
@@ -35,3 +36,17 @@ exports.createTask = async (req, res, next) => {
         });
     }
 }
+
+
+exports.updateTask = async (req, res, next) => {
+    
+    try{
+
+    }catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: "Something went wrong!",
+        });
+    }
+}
+

@@ -5,11 +5,14 @@ const taskSchema = new mongoose.Schema ({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
     },
     title :{
         type : String,
         required : true
+    },
+    description:{
+        type: String,
+        required: true
     },
     status: {
         type: String,
@@ -35,7 +38,7 @@ const taskSchema = new mongoose.Schema ({
     priority: {
         type: Number,
         enum: [0, 1, 2, 3],
-        required: true
+        default: 0
     },
     
 })
