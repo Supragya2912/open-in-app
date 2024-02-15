@@ -5,10 +5,14 @@ exports.createTask = async (req, res, next) => {
 
     try{
 
-        const { title, description , due_date } = req.body;
+        const { title, description , due_date , subTasks} = req.body;
+
+        console.log('INPUT', title, description, due_date, subTasks);
         
-        
+        console.log('SUB task', subTasks);
         const existing_task = await Task.findOne({ title: title, description: description});
+        // console.log('EXISTING', existing_task)
+        console.log('SUB task', subTasks);
 
         if(existing_task) {
             return res.status(400).json({
@@ -16,13 +20,32 @@ exports.createTask = async (req, res, next) => {
             })
         }
 
+        console.log('SUB task', subTasks);
+
         const newTask = new Task({
             title,
             description,
-            due_date
+            due_date,
+            subTasks: subTasks
         })
 
-        await newTask.save();
+        console.log('NEW TASK', newTask);
+
+        try {
+            await newTask.save();
+            res.status(200).json({
+                status: 'success',
+                message: "Task created successfully",
+                data: newTask
+            });
+        } catch (error) {
+            console.error("Error saving task:", error);
+            res.status(500).json({
+                status: 'error',
+                message: "Error saving task"
+            });
+        }
+        
         res.status(200).json({
             status: 'success',
             message: "Task created successfully",
@@ -41,6 +64,8 @@ exports.createTask = async (req, res, next) => {
 exports.updateTask = async (req, res, next) => {
     
     try{
+
+        
 
     }catch (err) {
         res.status(500).json({

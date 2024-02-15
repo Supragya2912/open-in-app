@@ -8,8 +8,4 @@ router.post('/register',Auth.registerUser);
 router.post('/login',Auth.loginUser);
 router.post('/createTask',Auth.protect, Task.createTask); 
 
-
-
-
-
 module.exports = router;

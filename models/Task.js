@@ -1,16 +1,19 @@
 const mongoose = require('mongoose');
+const SubTask = require('./SubTask');
 
+
+
+console.log(SubTask);
 const taskSchema = new mongoose.Schema ({
-
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
-    title :{
-        type : String,
-        required : true
+    title: {
+        type: String,
+        required: true
     },
-    description:{
+    description: {
         type: String,
         required: true
     },
@@ -40,8 +43,8 @@ const taskSchema = new mongoose.Schema ({
         enum: [0, 1, 2, 3],
         default: 0
     },
-    
-})
-
+    subTasks: [SubTask.schema] 
+    // subtasks: [SubTask] 
+});
 
 module.exports = mongoose.model('Task', taskSchema);
