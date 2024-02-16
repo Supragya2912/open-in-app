@@ -65,8 +65,31 @@ exports.updateTask = async (req, res, next) => {
     
     try{
 
-        
+        const { task_id, due_date , status} = req.body;
 
+        const existing_task = await Task.findById(task_id);
+
+        if(!existing_task) {
+            return res.status(400).json({
+                message: "Task does not exists"
+            })
+        }
+
+        if(due_date !== undefined){
+          existing_task.due_date = due_date  
+        }
+
+        if(status !== undefined && (status === 'TODO' || status === 'DONE')){
+            existing_task.status = status
+        }
+
+        await existing_task.save();
+
+        res.status(200).json({
+            status: 'success',
+            message: "Task updated successfully",
+            data: existing_task
+        });
     }catch (err) {
         res.status(500).json({
             status: 'error',
