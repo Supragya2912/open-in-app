@@ -101,9 +101,10 @@ exports.getAllUserTask = async( req, res, next) => {
         
         const query = {};
         if(priority) query.priority = priority;
-        if(due_date) query.due_data = { $lte: new Date(due_date) }; 
+        if(due_date) query.due_date = { $lte: new Date(due_date) }; 
 
         const totalTasks = await Task.countDocuments(query);
+        console.log(totalTasks);
 
         const offset = (page - 1) * limit;
         const tasks = await Task.find(query).sort({due_date:1}).skip(offset).limit(limit);
@@ -124,7 +125,6 @@ exports.getAllUserTask = async( req, res, next) => {
         res.status(500).json({
             status: 'error',
             message: "Something went wrong!",
-        
         })
     }
 }
