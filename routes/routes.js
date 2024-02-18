@@ -7,5 +7,7 @@ const Task = require('../controllers/task');
 router.post('/register',Auth.registerUser);
 router.post('/login',Auth.loginUser);
 router.post('/createTask',Auth.protect, Task.createTask); 
+router.post('/updateTask',Auth.protect, Task.updateTask);
+router.post('/getAllUserTask', Task.getAllUserTask);
 
 module.exports = router;

@@ -10,8 +10,10 @@ exports.registerUser = async (req, res, next) => {
     try {
 
         const { email, phone, password, priority } = req.body;
+        console.log(email, phone, password, priority)
 
-        const existing_user = await User.findOne({ phone });
+        const existing_user = await User.findOne({ email});
+        console.log(existing_user);
 
         if (existing_user) {
             return res.status(400).json({
@@ -53,6 +55,7 @@ exports.loginUser = async (req, res, next) => {
         const { email, password } = req.body;
 
         const existing_user = await User.findOne({ email });
+        console.log(existing_user);
 
         if (!existing_user) {
             res.status(404).json({
@@ -63,6 +66,7 @@ exports.loginUser = async (req, res, next) => {
 
 
         const passwordCompare = await bcrypt.compare(password, existing_user.password);
+        console.log(passwordCompare);
 
         if (!passwordCompare) {
             res.status(401).json({

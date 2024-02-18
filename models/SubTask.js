@@ -1,6 +1,14 @@
 const mongoose = require('mongoose');
 
 const subTaskSchema = new mongoose.Schema({
+    title:{
+        type: String,
+        required: true
+    },
+    description:{
+        type: String,
+        required: true
+    },
     task_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Task',

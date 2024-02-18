@@ -44,7 +44,7 @@ const taskSchema = new mongoose.Schema ({
         default: 0
     },
     subTasks: [SubTask.schema] 
-    // subtasks: [SubTask] 
+   
 });
 
 module.exports = mongoose.model('Task', taskSchema);
