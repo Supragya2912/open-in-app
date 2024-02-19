@@ -9,5 +9,7 @@ router.post('/login',Auth.loginUser);
 router.post('/createTask',Auth.protect, Task.createTask); 
 router.post('/updateTask',Auth.protect, Task.updateTask);
 router.post('/getAllUserTask', Auth.protect,Task.getAllUserTask);
+router.post('/getAllSubtask',Task.getAllUserSubTask)
+router.post('/updateStatusSubtask',Task.updateSubTask);
 
 module.exports = router;
