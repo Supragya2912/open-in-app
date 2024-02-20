@@ -169,7 +169,7 @@ exports.updateSubTask = async (req, res, next) => {
 
         const { task_id, subTask_id, status } = req.body;
 
-        console.log(task_id, subTask_id, status)
+       
 
         if (!task_id || !subTask_id || !status) {
             return res.status(400).json({
@@ -178,7 +178,7 @@ exports.updateSubTask = async (req, res, next) => {
         }
 
         const task = await Task.findById(task_id);
-        console.log(task);
+      
         if (!task) {
             res.status(404).json({
                 message: "Task does not exists"
@@ -186,13 +186,13 @@ exports.updateSubTask = async (req, res, next) => {
         }
 
         const subTask = task.subTasks.find(sub => sub._id.toString() === subTask_id);
-        console.log(subTask)
+  
         if (!subTask) {
             res.status(404).json({
                 message: "SubTask does not exists"
             })
         }
-        if(subTask.status != undefined && subTask.status === 0 || subTask.status === 1){
+        if (subTask.status != undefined && subTask.status === 0 || subTask.status === 1) {
             subTask.status = status;
         }
         await task.save();
@@ -203,6 +203,94 @@ exports.updateSubTask = async (req, res, next) => {
             subTask: subTask
         })
     } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: "Something went wrong!",
+        })
+    }
+}
+
+exports.softDeleteTask = async (req, res, next) => {
+
+    try {
+
+        const { task_id } = req.body;
+
+        console.log(task_id);
+
+        if (!task_id) {
+            return res.status(400).json({
+                message: "Task ID is required"
+            })
+        }
+
+        console.log("This passed")
+
+        const task = await Task.findById(task_id);
+        console.log(task);
+
+        if (!task) {
+            return res.status(404).json({
+                message: "Task not found"
+            });
+        }
+
+        task.deleted_at = new Date();
+
+        console.log("Passed2")
+        await task.save();
+        console.log("Saved");
+
+        res.status(200).json({
+            status: 'success',
+            message: "Task deleted successfully"
+        });
+
+    }catch(err){
+        res.status(500).json({
+            status: 'error',
+            message: "Something went wrong!",
+        })
+    }
+}
+
+
+exports.softDeleteSubTask = async (req, res, next) => {
+
+    try{
+
+        const {task_id , subTask_id} = req.body;
+
+
+        if(!task_id || !subTask_id){
+            return res.status(400).json({
+                message: "Task ID and SubTask ID is required"
+            })
+        }
+
+        const task = await Task.findById(task_id);
+        if (!task) {
+            res.status(404).json({
+                message: "Task does not exists"
+            })
+        }
+
+        const subTask = task.subTasks.find(sub => sub._id.toString() === subTask_id);
+        if (!subTask) {
+            res.status(404).json({
+                message: "SubTask does not exists"
+            })
+        }
+
+        subTask.deleted_at = new Date();
+        await task.save();
+
+        res.status(200).json({
+            status: 'success',
+            message: "Subtask deleted successfully"
+        })
+
+    }catch (err){
         res.status(500).json({
             status: 'error',
             message: "Something went wrong!",
