@@ -11,7 +11,7 @@ router.post('/updateTask',Auth.protect, Task.updateTask);
 router.post('/getAllUserTask', Auth.protect,Task.getAllUserTask);
 router.post('/getAllSubtask',Auth.protect,Task.getAllUserSubTask)
 router.post('/updateStatusSubtask',Auth.protect,Task.updateSubTask);
-router.post('/deleteTask',Task.softDeleteTask);
-router.post('/deleteSubtask',Task.softDeleteSubTask);
+router.post('/deleteTask',Auth.protect,Task.softDeleteTask);
+router.post('/deleteSubtask',Auth.protect,Task.softDeleteSubTask);
 
 module.exports = router;
