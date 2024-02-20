@@ -8,6 +8,8 @@ const routes = require('./routes/routes');
 const cookieParser = require('cookie-parser');
 const cron = require('node-cron');
 const Task = require('./models/Task');
+const User = require('./models/User');
+require('dotenv').config();
 const twilio = require('twilio');
 
 
@@ -54,8 +56,10 @@ app.use((err, req, res, next) => {
 
 
 
-
-const twilioClient = twilio('YOUR_TWILIO_ACCOUNT_SID', 'YOUR_TWILIO_AUTH_TOKEN');
+const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+const myPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+const twilioClient = twilio(twilioAccountSid, twilioAuthToken);
 
 cron.schedule('0 * * * *', async () => {
     try {
@@ -71,8 +75,9 @@ cron.schedule('0 * * * *', async () => {
         
                 await twilioClient.calls.create({
                     url: 'http://your-webhook-url', 
-                    to: user.phone_number,
-                    from: 'YOUR_TWILIO_PHONE_NUMBER'
+                    to: user.phone,
+                    from: myPhoneNumber
+                    
                 });
 
                 console.log(`Voice call initiated to user ${user.name} at ${user.phone_number}.`);
